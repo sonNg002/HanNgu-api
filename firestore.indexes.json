@@ -1,0 +1,10 @@
+{
+  "indexes": [],
+  "fieldOverrides": [
+    { "collectionGroup": "cards", "fieldPath": "fsrs.due", "indexes": [{ "order": "ASCENDING", "queryScope": "COLLECTION" }] },
+    { "collectionGroup": "cards", "fieldPath": "serverUpdatedAt", "indexes": [{ "order": "ASCENDING", "queryScope": "COLLECTION" }] },
+    { "collectionGroup": "reviews", "fieldPath": "serverUpdatedAt", "indexes": [{ "order": "ASCENDING", "queryScope": "COLLECTION" }] },
+    { "collectionGroup": "cards", "fieldPath": "mnemonic", "indexes": [] },
+    { "collectionGroup": "reviews", "fieldPath": "fsrsLog", "indexes": [] }
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "name": "hanngu-api",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22.14.0"
+  },
+  "scripts": {
+    "dev": "tsx watch --env-file-if-exists=.env src/server.ts",
+    "build": "tsc -p tsconfig.build.json",
+    "start": "node --enable-source-maps --env-file-if-exists=.env dist/server.js",
+    "typecheck": "tsc --noEmit",
+    "check": "npm run typecheck",
+    "test": "tsx --test tests/*.test.ts",
+    "test:coverage": "node --import tsx --test --experimental-test-coverage tests/*.test.ts",
+    "firebase:deploy": "firebase deploy --project hanngu-91a22 --only firestore:rules,firestore:indexes"
+  },
+  "dependencies": {
+    "firebase-admin": "14.5.0"
+  },
+  "devDependencies": {
+    "firebase-tools": "15.33.0",
+    "@types/node": "^26.6.5",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2"
+  }
+}

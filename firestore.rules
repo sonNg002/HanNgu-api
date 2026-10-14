@@ -1,0 +1,53 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function owner(uid) { return request.auth != null && request.auth.uid == uid; }
+    function versionValid() {
+      return request.resource.data.updatedAt is number && request.resource.data.updatedAt >= 0
+        && request.resource.data.revision is string && request.resource.data.revision.size() > 0
+        && request.resource.data.serverUpdatedAt == request.time;
+    }
+    // Không cho offline write cũ ghi đè bản mới giữa hai lần pull/push.
+    function newer() { return request.resource.data.updatedAt >= resource.data.updatedAt; }
+    function settingsValid() {
+      let s = request.resource.data.settings;
+      return s.newPerDay is int && s.newPerDay >= 1 && s.newPerDay <= 50
+        && s.order in ['hsk', 'freq'] && versionValid();
+    }
+    function cardValid(cardId) {
+      let c = request.resource.data;
+      return c.id == cardId && c.type in ['recognize', 'write', 'recall-hv']
+        && c.targetId is string && c.id == c.type + ':' + c.targetId
+        && c.mnemonic is string && c.mnemonic.size() <= 2000
+        && c.introducedAt is number && c.fsrs.due is number
+        && c.fsrs.reps is int && c.fsrs.reps >= 0 && versionValid();
+    }
+    function reviewValid(reviewId) {
+      let r = request.resource.data;
+      return r.id == reviewId && r.cardId is string && r.targetId is string
+        && r.type in ['recognize', 'write', 'recall-hv']
+        && r.cardId == r.type + ':' + r.targetId
+        && r.rating is int && r.rating >= 1 && r.rating <= 4
+        && r.reviewedAt is number && r.durationMs is number && r.durationMs >= 0
+        && versionValid();
+    }
+    match /users/{uid} {
+      allow read: if owner(uid);
+      allow create: if owner(uid) && settingsValid();
+      allow update: if owner(uid) && settingsValid() && newer();
+      match /cards/{cardId} {
+        allow read: if owner(uid);
+        allow create: if owner(uid) && cardValid(cardId);
+        allow update: if owner(uid) && cardValid(cardId) && newer();
+      }
+      match /reviews/{reviewId} {
+        allow read: if owner(uid);
+        allow create: if owner(uid) && reviewValid(reviewId);
+        // Retry cùng log chỉ đổi thời gian commit; nội dung log ôn đã ghi là bất biến.
+        allow update: if owner(uid) && reviewValid(reviewId)
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['serverUpdatedAt']);
+      }
+    }
+    // Những collection khác mặc định bị từ chối; dictionary chỉ ở public/data.
+  }
+}
