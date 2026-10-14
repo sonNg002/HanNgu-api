@@ -41,6 +41,8 @@ npm run test:coverage
 
 Test dùng transport/repository giả và HTTP server thật trên port ngẫu nhiên. Không ghi dữ liệu vào Firebase. CI chạy TypeScript, test và build trên Node 24; job `emulator` chạy test rules. Các file test được giữ để bảo vệ base, Docker chỉ chứa mã runtime và dependency production.
 
+`npm run test:emulator` chạy API thật với Auth và Firestore emulator (cần Java 21+) để kiểm Security Rules: phân trang 201 thẻ, retry log, log bất biến, LWW thẻ/settings, commit nguyên tử và cách ly UID. Test chỉ dùng project `demo-hanngu` và tự bỏ qua khi không có emulator. Chạy API thủ công với emulator: `npm run emulators`, sao chép `.env.emulator.example` thành `.env` rồi `npm run dev`; Firestore emulator dùng port 8180 để không trùng API. Frontend hiện chưa nối Auth emulator nên vẫn dùng token Firebase thật.
+
 ## Hợp đồng API
 
 Đăng nhập bằng Firebase ở frontend. Các endpoint `/v1/sync/*` yêu cầu `Authorization: Bearer <Firebase-ID-token>`. UID chỉ lấy từ token đã xác thực. API chuyển chính ID token đến Firestore REST để Security Rules tiếp tục kiểm ownership, LWW và log bất biến.
