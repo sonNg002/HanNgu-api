@@ -14,6 +14,8 @@
     "check": "npm run typecheck",
     "test": "tsx --test tests/*.test.ts",
     "test:coverage": "node --import tsx --test --experimental-test-coverage tests/*.test.ts",
+    "test:emulator": "firebase emulators:exec --project demo-hanngu --only auth,firestore \"tsx --test tests/emulator/*.test.ts\"",
+    "emulators": "firebase emulators:start --project demo-hanngu --only auth,firestore",
     "firebase:deploy": "firebase deploy --project hanngu-91a22 --only firestore:rules,firestore:indexes"
   },
   "dependencies": {

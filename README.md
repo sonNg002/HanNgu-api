@@ -39,7 +39,7 @@ npm run build
 npm run test:coverage
 ```
 
-Test dùng transport/repository giả và HTTP server thật trên port ngẫu nhiên. Không ghi dữ liệu vào Firebase. CI chạy TypeScript, test và build trên Node 24. Các file test được giữ để bảo vệ base, Docker chỉ chứa mã runtime và dependency production.
+Test dùng transport/repository giả và HTTP server thật trên port ngẫu nhiên. Không ghi dữ liệu vào Firebase. CI chạy TypeScript, test và build trên Node 24; job `emulator` chạy test rules. Các file test được giữ để bảo vệ base, Docker chỉ chứa mã runtime và dependency production.
 
 ## Hợp đồng API
 
